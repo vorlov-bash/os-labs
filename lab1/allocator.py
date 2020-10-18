@@ -1,7 +1,7 @@
 class Allocator:
-    HEADER_SIZE = 9
+    HEADER_SIZE = 3
 
-    def __init__(self, mem_size: int):
+    def __init__(self, mem_size):
         """
         Allocator initializer
 
@@ -108,10 +108,10 @@ class Allocator:
             block_addr = byte_header[0] + self.HEADER_SIZE
             block_size = byte_header[1][-1]
             block = self.__block[block_addr:block_size + block_addr]
-            print(f'#{i}\n'
-                  f'\tBLOCK ADDRESS:\t{byte_header[0]}\n'
-                  f'\tHEADER:\t{byte_header[1]}\n'
-                  f'\tBLOCK:\t{block}\n')
+            print('#{}\n'
+                  '\tBLOCK ADDRESS:\t{}\n'
+                  '\tHEADER:\t{}\n'
+                  '\tBLOCK:\t{}\n'.format(i, byte_header[0], byte_header[1], block))
         print('=' * 15)
 
     @property
@@ -266,7 +266,7 @@ class Allocator:
         return block
 
     @staticmethod
-    def __get_bytes_align(size: int):
+    def __get_bytes_align(size):
         """
         Aligns numbers to %4 (2 -> 4, 3 -> 4, 7 -> 8, 13 -> 16)
 
@@ -285,7 +285,7 @@ class Allocator:
         return size
 
     # @staticmethod
-    # def calculate_bytes_for_header_size(size: int):
+    # def calculate_bytes_for_header_size(size):
     #     if size < INT8:
     #         return 1
     #     if size < INT16:
@@ -294,29 +294,3 @@ class Allocator:
     #         return 4
     #     if size < INT64:
     #         return 8
-
-
-if __name__ == '__main__':
-    alloc = Allocator(100)
-
-    # mem_alloc
-    addr1 = alloc.mem_alloc(5)
-    alloc.block[addr1 + 3] = 112
-    addr2 = alloc.mem_alloc(6)
-    alloc.block[addr2 + 2] = 12
-    addr3 = alloc.mem_alloc(8)
-    alloc.block[addr3 + 5] = 1
-    addr4 = alloc.mem_alloc(4)
-    alloc.block[addr4 + 3] = 121
-    alloc.mem_dump()
-
-    # mem_realloc
-    alloc.mem_realloc(addr4, 15)
-    alloc.mem_dump()
-
-    # mem_free
-    alloc.mem_free(addr1)
-    alloc.mem_free(addr2)
-    alloc.mem_free(addr3)
-    alloc.mem_free(addr4)
-    alloc.mem_dump()
