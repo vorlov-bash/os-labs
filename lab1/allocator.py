@@ -1,5 +1,5 @@
 class Allocator:
-    HEADER_SIZE = 5
+    HEADER_SIZE = 9
 
     def __init__(self, mem_size: int):
         """
@@ -49,7 +49,6 @@ class Allocator:
                     header[-2] = new_header[-1]
                     self.__block[byte + size + self.HEADER_SIZE:byte + size + self.HEADER_SIZE * 2] = header
 
-                    print(self.__block)
                     return byte + self.HEADER_SIZE
             else:
                 return None
@@ -74,7 +73,65 @@ class Allocator:
         self.__block[block_pointer - self.HEADER_SIZE] = 0
 
         self.__merge_sides(block_pointer - self.HEADER_SIZE)
-        print(self.__block)
+
+    def mem_realloc(self, block_pointer, size):
+        """
+        Reallocate memory (+/-).
+        If block has been reallocated - upload old data to new block and return new address
+
+        Parameters
+        ----------
+        block_pointer: int
+            Address of old block
+
+        size: int
+            Reallocate block to size
+
+        Returns
+        -------
+        addr: int
+            Address of a new block
+        """
+        # Save existing data
+        data = self.__block[block_pointer:block_pointer + self.__block[block_pointer - 1]]
+        # Free old block
+        self.mem_free(block_pointer)
+        # Find new block in memory and upload data
+        addr = self.mem_alloc(size)
+        if addr:
+            self.__block[addr:addr + len(data)] = data
+        return addr
+
+    def mem_dump(self):
+        print('=' * 15)
+        for i, byte_header in enumerate(self.__iter_headers()):
+            block_addr = byte_header[0] + self.HEADER_SIZE
+            block_size = byte_header[1][-1]
+            block = self.__block[block_addr:block_size + block_addr]
+            print(f'#{i}\n'
+                  f'\tBLOCK ADDRESS:\t{byte_header[0]}\n'
+                  f'\tHEADER:\t{byte_header[1]}\n'
+                  f'\tBLOCK:\t{block}\n')
+        print('=' * 15)
+
+    @property
+    def block(self):
+        """
+        Encapsulation for a self.__block
+
+        Returns
+        -------
+        self.__block: list
+            Main memory block
+        """
+        return self.__block
+
+    @block.setter
+    def block(self, value):
+        """
+        Removes default setter to a self.block property
+        """
+        pass
 
     def __merge_sides(self, central_header_pointer):
         """
@@ -159,25 +216,6 @@ class Allocator:
             else:
                 return
 
-    @property
-    def block(self):
-        """
-        Encapsulation for a self.__block
-
-        Returns
-        -------
-        self.__block: list
-            Main memory block
-        """
-        return self.__block
-
-    @block.setter
-    def block(self, value):
-        """
-        Removes default setter to a self.block property
-        """
-        pass
-
     def __init_header(self, sizeof_prev_block, sizeof_curr_block, is_busy=1):
         """
         Header initializer([
@@ -258,16 +296,27 @@ class Allocator:
     #         return 8
 
 
-alloc = Allocator(60)
+if __name__ == '__main__':
+    alloc = Allocator(100)
 
-p1 = alloc.mem_alloc(4)
-p2 = alloc.mem_alloc(15)
-p3 = alloc.mem_alloc(4)
-p4 = alloc.mem_alloc(9)
+    # mem_alloc
+    addr1 = alloc.mem_alloc(5)
+    alloc.block[addr1 + 3] = 112
+    addr2 = alloc.mem_alloc(6)
+    alloc.block[addr2 + 2] = 12
+    addr3 = alloc.mem_alloc(8)
+    alloc.block[addr3 + 5] = 1
+    addr4 = alloc.mem_alloc(4)
+    alloc.block[addr4 + 3] = 121
+    alloc.mem_dump()
 
-alloc.mem_free(p4)
-alloc.mem_free(p1)
-alloc.mem_free(p2)
-alloc.mem_free(p3)
+    # mem_realloc
+    alloc.mem_realloc(addr4, 15)
+    alloc.mem_dump()
 
-print(alloc.block)
+    # mem_free
+    alloc.mem_free(addr1)
+    alloc.mem_free(addr2)
+    alloc.mem_free(addr3)
+    alloc.mem_free(addr4)
+    alloc.mem_dump()
