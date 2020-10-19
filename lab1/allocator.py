@@ -108,10 +108,10 @@ class Allocator:
             block_addr = byte_header[0] + self.HEADER_SIZE
             block_size = byte_header[1][-1]
             block = self.__block[block_addr:block_size + block_addr]
-            print('#{}\n'
-                  '\tBLOCK ADDRESS:\t{}\n'
-                  '\tHEADER:\t{}\n'
-                  '\tBLOCK:\t{}\n'.format(i, byte_header[0], byte_header[1], block))
+            print(f'#{i}\n'
+                  f'\tBLOCK ADDRESS:\t{byte_header[0]}\n'
+                  f'\tHEADER:\t{byte_header[1]}\n'
+                  f'\tFREE MEM:\t{block.count(0)}\n')
         print('=' * 15)
 
     @property
