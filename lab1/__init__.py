@@ -13,9 +13,8 @@ alloc.block[addr3 + 5] = 1
 addr4 = alloc.mem_alloc(41)
 alloc.block[addr4 + 3] = 121
 alloc.mem_dump()
-
 # mem_realloc
-alloc.mem_realloc(addr4, 15)
+print(alloc.mem_realloc(addr4, 112))
 alloc.mem_dump()
 
 # mem_free

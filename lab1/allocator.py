@@ -92,6 +92,7 @@ class Allocator:
         addr: int
             Address of a new block
         """
+
         # Save existing data
         data = self.__block[block_pointer:block_pointer + self.__block[block_pointer - 1]]
         # Free old block
@@ -220,8 +221,6 @@ class Allocator:
         """
         Header initializer([
                             0/1 - is block busy?
-                             0   - empty
-                             0   - empty
                             int  - size of previous block
                             int  - size of allocated block
                            ])
@@ -283,14 +282,3 @@ class Allocator:
         while size % 4:
             size += 1
         return size
-
-    # @staticmethod
-    # def calculate_bytes_for_header_size(size):
-    #     if size < INT8:
-    #         return 1
-    #     if size < INT16:
-    #         return 2
-    #     if size < INT32:
-    #         return 4
-    #     if size < INT64:
-    #         return 8
