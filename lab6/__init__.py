@@ -13,9 +13,7 @@ def profile(func):
         s = io.StringIO()
         ps = pstats.Stats(pr, stream=s).sort_stats('cumulative')
         ps.print_stats()
-        print(s.getvalue())
         return ret_val
-
     return wrapper
 
 
